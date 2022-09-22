@@ -1,23 +1,25 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h> //Header file for sleep(). man 3 sleep for details.
+#include <iostream>
+#include <cstdlib>
 #include <pthread.h>
-
-// A normal C function that is executed as a thread
-// when its name is specified in pthread_create()
-void *myThreadFun(void *vargp)
-{
-	sleep(1);
-	printf("Printing GeeksQuiz from Thread \n");
-	return NULL;
+using namespace std;
+#define NUM_THREADS 5
+void *PrintHello(void *threadid) {
+   long tid;
+   tid = (long)threadid;
+   printf("Hello World! Thread ID, %d\n", tid);
+   pthread_exit(NULL);
 }
-
-int main()
-{
-	pthread_t thread_id;
-	printf("Before Thread\n");
-	pthread_create(&thread_id, NULL, myThreadFun, NULL);
-	pthread_join(thread_id, NULL);
-	printf("After Thread\n");
-	exit(0);
+int main () {
+   pthread_t threads[NUM_THREADS];
+   int rc;
+   int i;
+   for( i = 0; i < NUM_THREADS; i++ ) {
+      cout << "main() : creating thread, " << i << endl;
+      rc = pthread_create(&threads[i], NULL, PrintHello, (void *)i);
+      if (rc) {
+         printf("Error:unable to create thread, %d\n", rc);
+         exit(-1);
+      }
+   }
+   pthread_exit(NULL);
 }
